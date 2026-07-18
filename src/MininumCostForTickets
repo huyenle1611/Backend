@@ -1,0 +1,43 @@
+public class MininumCostForTickets {
+
+	public static void main(String[] args) {
+		int[] travelDays = {1,2,4,5,7,29,30};
+		System.out.println(solution(travelDays));
+
+	}
+	/*
+	 * Bottom up:
+	 * Calculate cost from beginning of month till the current travel date 
+	 * Created costMemo[] to save the cost up to date. 
+	 * For each travel date: have 2 options: buy 1 day pass or weekly pass 
+	 * Compare the cost between these 2 options > save min cost into memo[]
+	 */
+	
+	public static int solution(int[] travelDays) {
+		if (travelDays.length >= 23) {
+			return 25;
+		}
+
+		int[] travelDates = new int[31];
+		int[] costMemo = new int[31];
+
+		for (int day : travelDays) {
+			travelDates[day] = 1;
+		}
+
+		for (int day = 1; day <= 30; day++) {
+
+			// for non-travel days, cost of that day = cost of previous day
+			if (travelDates[day] == 0) {
+				costMemo[day] = costMemo[day - 1];
+				continue;
+			}
+
+			int buyOneDayPass = costMemo[day - 1] + 2;
+			int buyWeeklyPass = costMemo[Math.max(0, day - 7)] + 7;
+			costMemo[day] = Math.min(buyOneDayPass, buyWeeklyPass);
+
+		}
+		return costMemo[30];
+	}
+}
