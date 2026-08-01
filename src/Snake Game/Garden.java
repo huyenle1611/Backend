@@ -45,7 +45,7 @@ public class Garden {
 
  // Display garden
     public void display(Snake snake) {
-        //Create a temporary board
+
         int[][] map = new int[HEIGHT][WIDTH];
 
         // Copy garden to map
