@@ -1,0 +1,18 @@
+-- question 1: sql
+-- Query 1: find the duplicate emails 
+SELECT email, COUNT(*) AS total
+FROM users
+GROUP BY email
+HAVING COUNT(*) > 1;
+
+-- Query 2: keep the smaller id 
+WITH cte_keep AS (
+    SELECT MIN(id) AS id
+    FROM users
+    GROUP BY email
+)
+DELETE FROM users
+WHERE id NOT IN (
+    SELECT id
+    FROM cte_keep
+);
