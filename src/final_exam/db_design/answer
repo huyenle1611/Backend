@@ -1,0 +1,71 @@
+QUESTION 2:  (2p)
+- Based on the requirement functions (ABOVE requirement). 
+- How do you desgin the database for best performance. 
+- List down each option you add to the database and benefit
+Answer: 
+From the FEATURES LIST of the system:
+Customers can search rooms by:
+-Check-in date
+-Check-out date
+-Number of guests
+
+I will create a composite index on check_in_time and check_out_time.
+This improves room availability checking for the customer's check-in and check-out dates faster using B+ Tree instead of scanning a full table. 
+
+The number of guests (room_type) normally is not too large (1-20..) so no need to put an index on this column. 
+
+QUESTION 3: (2p)
+- the ORDER/Booking with status PENDING (not PAID yet) will be updated 'EXPIRED' after 30 days;
+- please refer the sql below 
+----------
+UPDATE booking
+SET status = 'EXPIRED'
+WHERE status = 'PENDING' AND created_at < NOW() - INTERVAL 30 DAY;
+----------
+TASK: The DB has 100 million pending bookings expire everyday
+Advice a plan step by step to solve this task that not affect to user's experience (slow db, slow app response, out of memory, app shutdown, db shutdown, etc) 
+(all your knowlege about software, application desgin can be apply together to solve this task).
+
+Answer: 
+1. Indexing: 
+problem is that we have to find all the pending bookings, then check if the booking is expired (>30 days) 
+DB has 100M pendings bookings everyday, which means this is the heavy task for the system to scan and find all the pending bookings. 
+That’s why I will index on status column (to make the booking be sorted according their status > all pending bookings are sorted into a group) which makes it easier for system to navigate to find all pendings. 
+Next, I will put index on created_at as well.
+The systems will look like: 
+
+Paid…
+Canceled…
+Pending 
+        01/01
+        02/01
+        03/01 ….
+Then it will be much faster to find the date that exceeds 30 days. 
+
+2. We also can proceed into small batches (10k or 50K) instead of 100M expired bookings at a time. If we try to process 100M expired bookings at the same time, the database has to handle a heavy load of work, then makes the whole system slow down and can lead to slow performance or long waiting time from customers’ searching experience. 
+
+
+QUESTION 4: (2p)
+- There's booking app that let user checkout their booking. 
+- There is a case that user mistaken double click to the checkout button same time.
+- There are 2 checkout submit request are sent to server and the same data would be saved to the tables
+- What is your idea to prevent this ? You can explain in app level or database level (all your knowledge can be applied to this question) depend on your solution/idea 
+
+Answer: 
+We can disable the checkout button after the first click to prevent this. After customer clicks on the checkout button, it should show the loading or processing (circle) or the button should be greyed out. 
+In the database, we also can put constraint unique to checkout_request_id in the reservation table, with the information about the same reservation_id, we only accept 1 checkout request. 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
